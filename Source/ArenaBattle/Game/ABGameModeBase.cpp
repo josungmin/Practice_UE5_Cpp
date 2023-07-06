@@ -1,16 +1,20 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Game/ABGameModeBase.h"
 
 AABGameModeBase::AABGameModeBase()
 {
 	// Default Pawn Class
-	static ConstructorHelpers::FClassFinder<APawn> ThirdPersonClassRef(
-		TEXT("/Game/ThirdPerson/Blueprints/BP_ThirdPersonCharacter.BP_ThirdPersonCharacter_C"));
-	if (ThirdPersonClassRef.Class)
+	//static ConstructorHelpers::FClassFinder<APawn> ThirdPersonClassRef(
+	//	TEXT("/Game/ThirdPerson/Blueprints/BP_ThirdPersonCharacter.BP_ThirdPersonCharacter_C"));
+	//if (ThirdPersonClassRef.Class)
+	//{
+	//	DefaultPawnClass = ThirdPersonClassRef.Class;
+	//}
+
+	static ConstructorHelpers::FClassFinder<APawn> TDefaultPawnClassRef(
+		TEXT("/Script/CoreUObject.Class'/Script/ArenaBattle.ABCharacterPlayer'"));
+	if (TDefaultPawnClassRef.Class)
 	{
-		DefaultPawnClass = ThirdPersonClassRef.Class;
+		DefaultPawnClass = TDefaultPawnClassRef.Class;
 	}
 
 	// Player Controller
@@ -20,5 +24,7 @@ AABGameModeBase::AABGameModeBase()
 	{
 		PlayerControllerClass = PlayerControllerClassRef.Class;
 	}
+
+	///Script/CoreUObject.Class'/Script/ArenaBattle.ABCharacterPlayer'
 }
 
