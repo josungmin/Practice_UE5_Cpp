@@ -4,6 +4,13 @@
 #include "GameFramework/Character.h"
 #include "ABCharacterBase.generated.h"
 
+UENUM()
+enum class ECharacterControlType : uint8
+{
+	Shoulder,
+	Quater
+};
+
 UCLASS()
 class ARENABATTLE_API AABCharacterBase : public ACharacter
 {
