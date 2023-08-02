@@ -27,4 +27,9 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+protected:
+	UPROPERTY(EditAnyWhere, Category = CharacterControl, Meta = (AllowPrivateAccess = "true"))
+	TMap<ECharacterControlType, class UABCharacterControlDataAsset*> CharacterControlManaer;
+
+	virtual void SetCharacterControlData(const UABCharacterControlDataAsset* CharacterControlData);
 };

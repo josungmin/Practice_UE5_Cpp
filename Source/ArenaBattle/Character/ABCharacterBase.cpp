@@ -1,6 +1,8 @@
 #include "Character/ABCharacterBase.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "InputMappingContext.h"
+#include "Character/ABCharacterControlDataAsset.h"
 
 AABCharacterBase::AABCharacterBase()
 {
@@ -28,16 +30,29 @@ AABCharacterBase::AABCharacterBase()
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.0f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.0f; // 이동 중 정지 시 제동 값
 
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> CharacterMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/Characters/Mannequins/Meshes/SKM_Quinn_Simple.SKM_Quinn_Simple'"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> CharacterMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/InfinityBladeWarriors/Character/CompleteCharacters/SK_CharM_Cardboard.SK_CharM_Cardboard'"));
 	if (CharacterMeshRef.Object)
 	{
 		GetMesh()->SetSkeletalMesh(CharacterMeshRef.Object);
 	}
 
-	static ConstructorHelpers::FClassFinder<UAnimInstance> CharacterAnimRef(TEXT("/Game/Characters/Mannequins/Animations/ABP_Quinn.ABP_Quinn_C"));
+	static ConstructorHelpers::FClassFinder<UAnimInstance> CharacterAnimRef(TEXT("/Game/ArenaBattle/Animation/ABP_Player.ABP_Player_C"));
 	if (CharacterAnimRef.Class)
 	{
 		GetMesh()->SetAnimInstanceClass(CharacterAnimRef.Class);
+	}
+
+	// Control Data Section
+	static ConstructorHelpers::FObjectFinder<UABCharacterControlDataAsset> ShoulderDataRef(TEXT("/Script/ArenaBattle.ABCharacterControlDataAsset'/Game/ArenaBattle/CharacterControl/ABC_Shoulder.ABC_Shoulder'"));
+	if (ShoulderDataRef.Object)
+	{
+		CharacterControlManaer.Add(ECharacterControlType::Shoulder, ShoulderDataRef.Object);
+	}
+
+	static ConstructorHelpers::FObjectFinder<UABCharacterControlDataAsset> QuaterDataRef(TEXT("/Script/ArenaBattle.ABCharacterControlDataAsset'/Game/ArenaBattle/CharacterControl/ABC_Quater.ABC_Quater'"));
+	if (QuaterDataRef.Object)
+	{
+		CharacterControlManaer.Add(ECharacterControlType::Quater, QuaterDataRef.Object);
 	}
 }
 
@@ -57,5 +72,16 @@ void AABCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+void AABCharacterBase::SetCharacterControlData(const UABCharacterControlDataAsset* CharacterControlData)
+{
+	bUseControllerRotationYaw = CharacterControlData->bUseControlRotationYaw;
+	bUseControllerRotationPitch = CharacterControlData->bUseControlRotationPitch;
+	bUseControllerRotationRoll = CharacterControlData->bUseControlRotationRoll;
+
+	GetCharacterMovement()->RotationRate = CharacterControlData->RotationRate;
+	GetCharacterMovement()->bUseControllerDesiredRotation = CharacterControlData->bUseControllerDesiredRotation;
+	GetCharacterMovement()->bOrientRotationToMovement = CharacterControlData->bOrientRotationToMovement;
 }
 
