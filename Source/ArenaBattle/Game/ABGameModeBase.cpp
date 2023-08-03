@@ -11,7 +11,7 @@ AABGameModeBase::AABGameModeBase()
 	//}
 
 	static ConstructorHelpers::FClassFinder<APawn> TDefaultPawnClassRef(
-		TEXT("/Script/CoreUObject.Class'/Script/ArenaBattle.ABCharacterPlayer'"));
+		TEXT("/Game/ArenaBattle/Character/BP_CharacterPlayer.BP_CharacterPlayer_C"));
 	if (TDefaultPawnClassRef.Class)
 	{
 		DefaultPawnClass = TDefaultPawnClassRef.Class;

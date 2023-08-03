@@ -15,19 +15,31 @@ public:
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Character)
-	TObjectPtr<class ACharacter> Owner;
+		TObjectPtr<class ACharacter> Owner;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Character)
-	TObjectPtr<class UCharacterMovementComponent> Movement;
+		TObjectPtr<class UCharacterMovementComponent> Movement;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character)
-	uint32 bIsRunning : 1;
+		uint32 bIsRunning : 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character)
-	float GroundSpeed;
+		float MoveThreshould;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character)
-	FVector Velocity;
+		float GroundSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character)
+		FVector Velocity;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character)
+		uint32 bIsJumping : 1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character)
+		uint32 bIsFalling : 1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character)
+		float JumpThreshould;
 
 protected:
 	virtual void NativeInitializeAnimation() override;
