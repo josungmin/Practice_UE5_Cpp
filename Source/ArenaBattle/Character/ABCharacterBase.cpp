@@ -185,6 +185,7 @@ void AABCharacterBase::SetDead()
 	animInstance->Montage_Play(DeadMontage);
 
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
 }
 
 float AABCharacterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)

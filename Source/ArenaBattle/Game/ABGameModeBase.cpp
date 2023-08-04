@@ -1,4 +1,6 @@
 #include "Game/ABGameModeBase.h"
+#include "Character/ABCharacterNonPlayer.h"
+#include "Math/UnrealMathUtility.h"
 
 AABGameModeBase::AABGameModeBase()
 {
@@ -27,4 +29,24 @@ AABGameModeBase::AABGameModeBase()
 
 	///Script/CoreUObject.Class'/Script/ArenaBattle.ABCharacterPlayer'
 }
+
+void AABGameModeBase::BeginPlay()
+{
+	Super::BeginPlay();
+
+	SpawnCharacter();
+	
+
+}
+
+void AABGameModeBase::SpawnCharacter()
+{
+	FActorSpawnParameters params;
+	FVector Location = FVector(FMath::RandRange(-800.0f, 800.0f), FMath::RandRange(-800.0f, 800.0f), 90);
+	FRotator Rotation = FRotator(0, 180, 0);
+
+	GetWorld()->SpawnActor<ACharacter>(AABCharacterNonPlayer::StaticClass(), Location, Rotation, params);
+
+}
+
 
