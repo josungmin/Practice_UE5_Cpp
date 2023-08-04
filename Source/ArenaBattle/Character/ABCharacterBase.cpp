@@ -4,7 +4,8 @@
 #include "InputMappingContext.h"
 #include "Character/ABCharacterControlDataAsset.h"
 #include "Character/ABComboActionData.h"
-
+#include "Character/ABCharacterNonPlayer.h"
+#include "Engine/DamageEvents.h"
 
 AABCharacterBase::AABCharacterBase()
 {
@@ -16,12 +17,12 @@ AABCharacterBase::AABCharacterBase()
 
 	// Capsule Component
 	GetCapsuleComponent()->InitCapsuleSize(35.0f, 90.0f);
-	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Pawn"));
+	GetCapsuleComponent()->SetCollisionProfileName(TEXT("ABCapsule"));
 
 	// SkeletalMesh Component
 	GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -90.0f), FRotator(0.0f, -90.0f, 0.0f));
 	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
-	GetMesh()->SetCollisionProfileName(TEXT("CaracterMesh")); // 대전 게임 같이 캡슐영역만이 아닌 면밀한 충돌처리가 필요한 경우 메쉬에도 충돌처리를 한다.
+	GetMesh()->SetCollisionProfileName(TEXT("NoCollision")); // 대전 게임 같이 캡슐영역만이 아닌 면밀한 충돌처리가 필요한 경우 메쉬에도 충돌처리를 한다.
 
 	// CharacterMovement Component
 	GetCharacterMovement()->bOrientRotationToMovement = true; // 이동 시 해당 방향으로 회전을 시킬 것인지 지정
@@ -55,6 +56,12 @@ AABCharacterBase::AABCharacterBase()
 	if (QuaterDataRef.Object)
 	{
 		CharacterControlManaer.Add(ECharacterControlType::Quater, QuaterDataRef.Object);
+	}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> DeadMontageRef(TEXT("Script/Engine.AnimMontage'/Game/ArenaBattle/Animation/AM_Dead.AM_Dead'"));
+	if (DeadMontageRef.Object)
+	{
+		DeadMontage = DeadMontageRef.Object;
 	}
 }
 
@@ -168,4 +175,53 @@ void AABCharacterBase::ComboCheck()
 		SetComboCheckTimmer();
 		HasNextComboCommand = false;
 	}
+}
+
+
+void AABCharacterBase::SetDead()
+{
+	UAnimInstance* animInstance = GetMesh()->GetAnimInstance();
+	animInstance->StopAllMontages(0.0f);
+	animInstance->Montage_Play(DeadMontage);
+
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+float AABCharacterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	float Damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	SetDead();
+
+	return Damage;
+}
+
+
+void AABCharacterBase::AttackHitCheck()
+{
+	FCollisionQueryParams Params(SCENE_QUERY_STAT(Attack), false, this);
+
+	FHitResult outHitResult;
+	const float attackRange = 150.0f;
+	const float radius = 50.0f;
+
+	const FVector start = GetActorLocation() + GetActorForwardVector() * GetCapsuleComponent()->GetScaledCapsuleRadius();
+	const FVector end = start + GetActorForwardVector() * attackRange;
+
+	bool bIsHit = GetWorld()->SweepSingleByChannel(outHitResult, start, end, FQuat::Identity, ECC_GameTraceChannel1, FCollisionShape::MakeSphere(radius), Params);
+
+	if (bIsHit)
+	{
+		FDamageEvent DamageEvent;
+		outHitResult.GetActor()->TakeDamage(100.0f, DamageEvent, GetController(), this);
+	}
+
+#if ENABLE_DRAW_DEBUG
+	FVector capsulePosition = start + (end - start) / 2.0f;
+	float halfHeight = attackRange / 2.0f;
+	FColor color = bIsHit ? FColor::Green : FColor::Red;
+
+	DrawDebugCapsule(GetWorld(), capsulePosition, halfHeight, radius, FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(), color, false, 3.0f);
+
+#endif
 }
