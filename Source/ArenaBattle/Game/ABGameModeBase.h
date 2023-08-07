@@ -17,8 +17,7 @@ class ARENABATTLE_API AABGameModeBase : public AGameModeBase
 protected:
 	virtual void BeginPlay() override;
 
+public:
 	void SpawnCharacter();
-
-
 };
 

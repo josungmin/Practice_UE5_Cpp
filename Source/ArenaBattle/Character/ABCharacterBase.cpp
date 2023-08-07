@@ -6,6 +6,8 @@
 #include "Character/ABComboActionData.h"
 #include "Character/ABCharacterNonPlayer.h"
 #include "Engine/DamageEvents.h"
+#include "Kismet/GameplayStatics.h"
+#include "Game/ABGameModeBase.h"
 
 AABCharacterBase::AABCharacterBase()
 {
@@ -186,6 +188,14 @@ void AABCharacterBase::SetDead()
 
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
+	AABGameModeBase* GameMode = Cast<AABGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+
+	FTimerHandle WaitHandle;
+	float WaitTime = 3.0f; 
+	GetWorld()->GetTimerManager().SetTimer(WaitHandle, FTimerDelegate::CreateLambda([&]()
+		{		
+			GameMode->SpawnCharacter();
+		}), WaitTime, false);
 }
 
 float AABCharacterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
