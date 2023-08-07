@@ -191,11 +191,11 @@ void AABCharacterBase::SetDead()
 	AABGameModeBase* GameMode = Cast<AABGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 
 	FTimerHandle WaitHandle;
-	float WaitTime = 3.0f; 
-	GetWorld()->GetTimerManager().SetTimer(WaitHandle, FTimerDelegate::CreateLambda([&]()
-		{		
-			GameMode->SpawnCharacter();
-		}), WaitTime, false);
+	float DelayTime = 3.0f;
+	FTimerDelegate TimerDelegate;
+
+	TimerDelegate.BindUObject(GameMode, &AABGameModeBase::SpawnCharacter);
+	GetWorld()->GetTimerManager().SetTimer(WaitHandle, TimerDelegate, DelayTime, false);
 }
 
 float AABCharacterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)

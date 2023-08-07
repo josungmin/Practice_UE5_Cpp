@@ -40,19 +40,17 @@ void AABGameModeBase::BeginPlay()
 void AABGameModeBase::SpawnCharacter()
 {
 	static int count = 0;
-	
-	if (count >= 4)
+
+	if (count >= 5)
 	{
 		UE_LOG(LogTemp, Log, TEXT("%d"), count);
+		return;
 	}
 
 	count++;
 
-	FActorSpawnParameters params;
 	FVector Location = FVector(FMath::RandRange(-800.0f, 800.0f), FMath::RandRange(-800.0f, 800.0f), 90);
 	FRotator Rotation = FRotator(0, 180, 0);
 
-	GetWorld()->SpawnActor<ACharacter>(AABCharacterNonPlayer::StaticClass(), Location, Rotation, params);
+	GetWorld()->SpawnActor<AABCharacterNonPlayer>(Location, Rotation);
 }
-
-

@@ -13,6 +13,12 @@ class ARENABATTLE_API AABGameModeBase : public AGameModeBase
 	GENERATED_BODY()
 
 	AABGameModeBase();
+	
+private:
+	UPROPERTY(EditAnyWhere)
+		TSubclassOf<ACharacter> Enemy;
+
+	TArray<class AABCharacterNonPlayer*> Enemies;
 
 protected:
 	virtual void BeginPlay() override;
